@@ -57,20 +57,23 @@ class Scene extends UniformProvider {
 
     const genericMove = function(t, dt) {
       var acceleration = this.force.mul(this.invMass);
-      var ahead = new Vec3(Math.cos(this.velocity.x), Math.sin(this.velocity.y), 0);
-      
+      this.velocity.addScaled(dt, acceleration);
+      var ahead = new Vec3(Math.cos(this.orientation), Math.sin(this.orientation), 0);
       var aheadVelocity = ahead.times(ahead.dot(this.velocity));
-      var sideVelocity = ahead.times(this.velocity.minus(ahead))
-      this.velocity.addScaled(dt, aheadVelocity * Math.pow(this.backDrag, dt));
-      this.velocity.addScaled(dt, sideVelocity * Math.pow(this.sideDrag, dt));
+      var sideVelocity = this.velocity.minus(ahead);
+
+      this.velocity.set();
+      this.velocity.addScaled(Math.pow(this.backDrag, dt), aheadVelocity);
+      this.velocity.addScaled(Math.pow(this.sideDrag, dt), sideVelocity); 
       this.position.addScaled(dt, this.velocity);
+
       const angularAcceleration = this.torque * this.invAngularMass;
       this.angularVelocity += angularAcceleration * dt;
       this.angularVelocity *= Math.pow(this.angularDrag, dt);
       this.orientation += this.angularVelocity * dt;
     };
 
-    for (let i = 0; i < 64; i++) {
+    for (let i = 0; i < 0; i++) {
       const asteroid = new GameObject(this.asteroidMesh);
       asteroid.position.setRandom(new Vec3(-12, -12, 0), new Vec3(12, 12, 0));
       asteroid.velocity.setRandom(new Vec3(-2, -2, 0), new Vec3(2, 2, 0));
@@ -101,7 +104,7 @@ class Scene extends UniformProvider {
         if(keysPressed.RIGHT) {
           this.torque -= 1;
         }
-        const ahead = new Vec3(Math.cos(this.velocity.x), Math.sin(this.velocity.y), 0);
+        const ahead = new Vec3(Math.cos(this.orientation), Math.sin(this.orientation), 0);
         this.force = ahead.mul(this.thrust);
     };
     this.avatar.move = genericMove;

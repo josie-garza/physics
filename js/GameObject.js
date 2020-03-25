@@ -5,7 +5,7 @@ class GameObject extends UniformProvider {
     super("gameObject");
 
     this.position = new Vec3(0, 0, 0); 
-    this.orientation = 1; 
+    this.orientation = 0; 
     this.scale = new Vec3(1, 1, 1); 
 
     this.parent = null; 
