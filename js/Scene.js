@@ -60,7 +60,7 @@ class Scene extends UniformProvider {
       this.velocity.addScaled(dt, acceleration);
       var ahead = new Vec3(Math.cos(this.orientation), Math.sin(this.orientation), 0);
       var aheadVelocity = ahead.times(ahead.dot(this.velocity));
-      var sideVelocity = this.velocity.minus(ahead);
+      var sideVelocity = this.velocity.minus(aheadVelocity);
 
       this.velocity.set();
       this.velocity.addScaled(Math.pow(this.backDrag, dt), aheadVelocity);
@@ -73,7 +73,7 @@ class Scene extends UniformProvider {
       this.orientation += this.angularVelocity * dt;
     };
 
-    for (let i = 0; i < 0; i++) {
+    for (let i = 0; i < 64; i++) {
       const asteroid = new GameObject(this.asteroidMesh);
       asteroid.position.setRandom(new Vec3(-12, -12, 0), new Vec3(12, 12, 0));
       asteroid.velocity.setRandom(new Vec3(-2, -2, 0), new Vec3(2, 2, 0));
