@@ -31,10 +31,7 @@ class Scene extends UniformProvider {
       new Texture2D(gl, "media/background.jpg")
     );
 
-    this.backgroundMesh = new Mesh(
-      this.backgroundMaterial,
-      this.texturedQuadGeometry
-    );
+    this.backgroundMesh = new Mesh(this.backgroundMaterial, this.texturedQuadGeometry);
     this.background = new GameObject(this.backgroundMesh);
     this.background.update = function() {};
     this.gameObjects.push(this.background);
@@ -89,6 +86,7 @@ class Scene extends UniformProvider {
     this.avatar.backDrag = 0.9;
     this.avatar.sideDrag = 0.5;
     this.avatar.angularDrag = 0.5;
+
     this.avatar.control = function(t, dt, keysPressed, colliders) {
         this.thrust = 0;
         if(keysPressed.UP) {
@@ -106,6 +104,25 @@ class Scene extends UniformProvider {
         }
         const ahead = new Vec3(Math.cos(this.orientation), Math.sin(this.orientation), 0);
         this.force = ahead.mul(this.thrust);
+
+        for (const other of colliders) {
+          if (other == this) {
+            continue;
+          } else {
+            const dist = this.position.minus(other.position);
+            // assuming radius + radius = 2
+            const dist2 = dist.dot(dist);
+            if (Math.sqrt(dist2) < 2) {
+              const normal = dist.direction();
+              //this.position.addScaled(0.01, normal);
+              //other.position.addScaled(0.01, normal);
+              const relVelocity = this.velocity.minus(other.velocity);
+              const impMag = normal.dot(relVelocity) / (20);
+              this.velocity.addScaled(-impMag, normal);
+              other.velocity.addScaled(-impMag, normal);
+            }
+          }
+        }
     };
     this.avatar.move = genericMove;
 
